@@ -2,6 +2,10 @@ require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 
+// DataBase Connection
+require('./src/db')
+const { getListOfInbounds } = require('./src/controllers/list')
+
 // Express app
 const app = express()
 
@@ -16,3 +20,5 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
 	console.log(`Server running on port: ${PORT}`)
 })
+
+// TODO create cron job each 30day to update hosts sessions
