@@ -9,6 +9,12 @@ const updateOrCreateSessions = async () => {
 		attributes: ['hostName', 'username', 'password'],
 	})
 
+	if (hosts.length <= 0) {
+		console.log('No system found, Please add some!')
+		return
+	}
+
+	console.info('Updating sessions started')
 	for (let i = 0; i < hosts.length; i++) {
 		const host = hosts[i].dataValues
 		console.log(host)
@@ -23,6 +29,8 @@ const updateOrCreateSessions = async () => {
 			}),
 		})
 			.then(async response => {
+				if (!response.data.success) return 'Failed'
+
 				const session = response.headers['set-cookie'][0]
 					.split(';')[0]
 					.substring(8)
@@ -42,6 +50,8 @@ const updateOrCreateSessions = async () => {
 						`Failed to update Host's session, HOST_NAME: ${host.hostName}`,
 					)
 				}
+
+				console.info(`${host.hostName}'s session updated successfully`)
 			})
 			.catch(err => {
 				console.error(err)

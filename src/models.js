@@ -19,6 +19,9 @@ const System = sequelize.define(
 		session: {
 			type: DataTypes.STRING,
 		},
+		inboundsCount: {
+			type: DataTypes.BIGINT,
+		},
 	},
 	{
 		timestamps: true,
@@ -36,8 +39,39 @@ const KeyValue = sequelize.define(
 	},
 )
 
+const Inbounds = sequelize.define(
+	'Inbounds',
+	{
+		inboundId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			unique: true,
+		},
+		total: {
+			type: DataTypes.BIGINT,
+		},
+		remark: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		port: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		protocol: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+	},
+	{ timestamps: true },
+)
+
+// Relationships
+System.hasOne(Inbounds)
+Inbounds.belongsTo(System)
+
 sequelize
-	.sync()
+	.sync({ force: false })
 	.then(() => {
 		console.log('All tables created successfully')
 	})
@@ -45,4 +79,4 @@ sequelize
 		console.log("Couldn't sync tables")
 	})
 
-module.exports = { System, KeyValue }
+module.exports = { System, KeyValue, Inbounds }
