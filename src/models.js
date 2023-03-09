@@ -66,6 +66,25 @@ const Inbounds = sequelize.define(
 	{ timestamps: true },
 )
 
+const Clients = sequelize.define(
+	'Clients',
+	{
+		inboundId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		total: {
+			type: DataTypes.BIGINT,
+		},
+		email: {
+			type: DataTypes.STRING,
+		},
+		expiryTime: DataTypes.STRING,
+		clientId: DataTypes.STRING,
+	},
+	{ timestamps: true },
+)
+
 // Relationships
 System.hasOne(Inbounds)
 Inbounds.belongsTo(System)
@@ -79,4 +98,4 @@ sequelize
 		console.log("Couldn't sync tables")
 	})
 
-module.exports = { System, KeyValue, Inbounds }
+module.exports = { System, KeyValue, Inbounds, Clients }

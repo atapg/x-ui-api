@@ -7,13 +7,15 @@ const { streamSettings, sniffing } = require('../utils/constants')
 const axios = require('axios')
 const { httpsAgent } = require('../config')
 const qs = require('qs')
-const { Inbounds, System } = require('../models')
+const { Inbounds, System, Clients } = require('../models')
 
 const addClientIntoInbound = async (
 	hostName,
 	totalGB = 1,
 	expiryTimeInTimestamps = 0,
 ) => {
+	const totalInBytes = totalGB * 1024 * 1024 * 1024
+
 	const host = await System.findOne({
 		where: {
 			hostName: hostName,
@@ -30,7 +32,7 @@ const addClientIntoInbound = async (
 		alterId: 0,
 		email: `${generateEmail(10)}@x-ui-english.dev`,
 		limitIp: 0,
-		totalGB: totalGB * 1024 * 1024 * 1024, // change to bytes
+		totalGB: totalInBytes, // change to bytes
 		expiryTime: new Date(expiryTimeInTimestamps).getTime(),
 	}
 
@@ -78,6 +80,14 @@ const addClientIntoInbound = async (
 			console.log(
 				`New client added into: ${hostName}, inboundId: ${inbound.dataValues.inboundId}`,
 			)
+
+			await Clients.create({
+				inboundId: inbound.dataValues.inboundId,
+				total: totalInBytes,
+				email: clientInfo.email,
+				expiryTime: expiryTimeInTimestamps,
+				clientId: clientInfo.id,
+			})
 
 			return data.obj
 		})

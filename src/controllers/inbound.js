@@ -62,7 +62,6 @@ const createMainVmessInbound = async hostName => {
 		data: qs.stringify(data),
 	})
 		.then(async ({ data }) => {
-			// console.log(data.obj)
 			console.log(`Inbound successfully added into: ${hostName}`)
 
 			await Inbounds.create({
@@ -83,4 +82,33 @@ const createMainVmessInbound = async hostName => {
 		})
 }
 
-module.exports = { createMainVmessInbound }
+const getInboundsList = async hostName => {
+	const host = await System.findOne({
+		where: {
+			hostName: hostName,
+		},
+	})
+
+	if (!host) return 'Err'
+
+	return axios({
+		httpsAgent,
+		method: 'POST',
+		url: `${hostName}/xui/inbound/list`,
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+			Cookie: `session=${host.dataValues.session}`,
+		},
+	})
+		.then(({ data }) => {
+			console.log(`Get list of inbounds successfully, host: ${hostName}`)
+
+			return data.obj
+		})
+		.catch(err => {
+			console.error(err)
+			return null
+		})
+}
+
+module.exports = { createMainVmessInbound, getInboundsList }
