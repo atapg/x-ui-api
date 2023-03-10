@@ -8,6 +8,7 @@ const axios = require('axios')
 const { httpsAgent } = require('../config')
 const qs = require('qs')
 const { Inbounds, System, Clients } = require('../models')
+const { getInboundsList } = require('./inbound')
 
 const addClientIntoInbound = async (
 	hostName,
@@ -53,7 +54,49 @@ const addClientIntoInbound = async (
 
 	const settings = {
 		// first client has unlimited bandwidth
-		clients: [clientInfo],
+		clients: [
+			{
+				id: 1,
+				inboundId: 1,
+				enable: true,
+				email: '',
+				up: 0,
+				down: 0,
+				expiryTime: 0,
+				total: 0,
+			},
+			{
+				id: 2,
+				inboundId: 1,
+				enable: true,
+				email: 'zCCVGJvqMF@x-ui-english.dev',
+				up: 0,
+				down: 0,
+				expiryTime: 0,
+				total: 1073741824,
+			},
+			{
+				id: 3,
+				inboundId: 1,
+				enable: true,
+				email: 'nDUtdvKkh4@x-ui-english.dev',
+				up: 0,
+				down: 0,
+				expiryTime: 0,
+				total: 1073741824,
+			},
+			{
+				id: 4,
+				inboundId: 1,
+				enable: true,
+				email: 'F1gbRKTlCi@x-ui-english.dev',
+				up: 0,
+				down: 110,
+				expiryTime: 0,
+				total: 1073741824,
+			},
+			clientInfo,
+		],
 		disableInsecureEncryption: false,
 	}
 
@@ -87,6 +130,7 @@ const addClientIntoInbound = async (
 				email: clientInfo.email,
 				expiryTime: expiryTimeInTimestamps,
 				clientId: clientInfo.id,
+				hostName: hostName,
 			})
 
 			return data.obj
@@ -100,4 +144,26 @@ const addClientIntoInbound = async (
 		})
 }
 
-module.exports = { addClientIntoInbound }
+const deleteClient = async clientId => {
+	if (!clientId) return null
+
+	const client = await Clients.findOne({
+		where: { clientId },
+	})
+
+	if (!client) return null
+
+	const host = await System.findOne({
+		where: { hostName: client.dataValues.hostName },
+	})
+
+	if (!host) return null
+
+	const list = await getInboundsList(client.dataValues.hostName)
+
+	console.log(list)
+}
+
+// deleteClient('481a4fc1-d0cf-4e37-a34a-d7d1612ffcd6')
+
+module.exports = { addClientIntoInbound, deleteClient }

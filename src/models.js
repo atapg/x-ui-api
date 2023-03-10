@@ -79,6 +79,7 @@ const Clients = sequelize.define(
 		email: {
 			type: DataTypes.STRING,
 		},
+		hostName: DataTypes.STRING,
 		expiryTime: DataTypes.STRING,
 		clientId: DataTypes.STRING,
 	},

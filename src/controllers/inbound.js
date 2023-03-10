@@ -6,7 +6,14 @@ const { System } = require('../models')
 const { Inbounds } = require('../models')
 const { streamSettings, sniffing } = require('../utils/constants')
 
-const createMainVmessInbound = async hostName => {
+const createMainVmessInbound = async (
+	hostName,
+	remark,
+	totalGB,
+	expiryTimeInTimestamps,
+) => {
+	const totalInBytes = totalGB * 1024 * 1024 * 1024
+
 	const host = await System.findOne({
 		where: {
 			hostName: hostName,
@@ -18,10 +25,10 @@ const createMainVmessInbound = async hostName => {
 	const data = {
 		up: 0,
 		down: 0,
-		total: 0,
-		remark: 'turboo_server',
+		total: totalInBytes,
+		remark: remark ? remark : 'turboo_server',
 		enable: true,
-		expiryTime: 0,
+		expiryTime: expiryTimeInTimestamps,
 		listen: null,
 		port: generatePort(),
 		protocol: 'vmess',
@@ -31,15 +38,14 @@ const createMainVmessInbound = async hostName => {
 	}
 
 	const settings = {
-		// first client has unlimited bandwidth
 		clients: [
 			{
 				id: generateUUID(),
 				alterId: 0,
 				email: '',
-				limitIp: '',
+				limitIp: 0,
 				totalGB: 0,
-				expiryTime: '',
+				expiryTime: 0,
 			},
 		],
 		disableInsecureEncryption: false,
@@ -49,7 +55,7 @@ const createMainVmessInbound = async hostName => {
 	data.streamSettings = JSON.stringify(streamSettings)
 	data.sniffing = JSON.stringify(sniffing)
 
-	console.log(`Adding new inbound into: ${hostName}`)
+	console.info(`Adding new inbound into: ${hostName}`)
 
 	return axios({
 		httpsAgent,
@@ -62,7 +68,7 @@ const createMainVmessInbound = async hostName => {
 		data: qs.stringify(data),
 	})
 		.then(async ({ data }) => {
-			console.log(`Inbound successfully added into: ${hostName}`)
+			console.info(`Inbound successfully added into: ${hostName}`)
 
 			await Inbounds.create({
 				inboundId: data.obj.id,
