@@ -22,6 +22,9 @@ route.get('/', async (req, res) => {})
 route.post('/inbound', async (req, res) => {
 	const { hostName, totalGB, expiryTime, remark } = req.body
 
+	if (!hostName || !totalGB || !expiryTime || !remark)
+		return res.status(400).send('Insufficient Credentials')
+
 	const inbound = await createMainVmessInbound(
 		hostName,
 		remark,
@@ -35,6 +38,8 @@ route.post('/inbound', async (req, res) => {
 })
 
 route.delete('/inbound', async (req, res) => {
+	if (!req.body.url) return res.status(400).send('Insufficient Credentials')
+
 	const inbound = await deleteVmessInbound(req.body.url)
 
 	if (inbound) return res.json({ message: inbound })
@@ -43,6 +48,8 @@ route.delete('/inbound', async (req, res) => {
 })
 
 route.post('/inbound/traffic', async (req, res) => {
+	if (!req.body.url) return res.status(400).send('Insufficient Credentials')
+
 	const traffic = await getVmessInboundTraffic(req.body.url)
 
 	if (!traffic) res.status(400).json({ message: false })
