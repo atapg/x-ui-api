@@ -4,6 +4,7 @@ const sequelize = require('./db')
 const System = sequelize.define(
 	'System',
 	{
+		host: DataTypes.STRING,
 		hostName: {
 			type: DataTypes.STRING,
 			allowNull: false,
@@ -62,6 +63,8 @@ const Inbounds = sequelize.define(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
+		expiryTime: DataTypes.BIGINT,
+		url: DataTypes.TEXT,
 	},
 	{ timestamps: true },
 )

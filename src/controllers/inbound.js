@@ -1,7 +1,11 @@
 const axios = require('axios')
 const { httpsAgent } = require('../config')
 const qs = require('qs')
-const { generatePort, generateUUID } = require('../utils/helpers')
+const {
+	generatePort,
+	generateUUID,
+	convertToBase64,
+} = require('../utils/helpers')
 const { System } = require('../models')
 const { Inbounds } = require('../models')
 const { streamSettings, sniffing } = require('../utils/constants')
@@ -37,10 +41,12 @@ const createMainVmessInbound = async (
 		sniffing: {},
 	}
 
+	const id = generateUUID()
+
 	const settings = {
 		clients: [
 			{
-				id: generateUUID(),
+				id: id,
 				alterId: 0,
 				email: '',
 				limitIp: 0,
@@ -77,6 +83,20 @@ const createMainVmessInbound = async (
 				port: data.obj.port,
 				protocol: data.obj.protocol,
 				SystemId: host.dataValues.id,
+				expiryTime: data.obj.expiryTime,
+				url: convertToBase64({
+					v: '2',
+					ps: data.obj.remark,
+					add: host.dataValues.host,
+					port: data.obj.port,
+					id: id,
+					aid: 0,
+					net: 'tcp',
+					type: 'http',
+					host: 'bmi.ir',
+					path: '/',
+					tls: 'none',
+				}),
 			})
 
 			return data.obj

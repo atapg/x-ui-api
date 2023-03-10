@@ -22,4 +22,18 @@ const generateEmail = length => {
 	return result
 }
 
-module.exports = { generateUUID, generatePort, generateEmail }
+const convertToBase64 = txt => {
+	return btoa(JSON.stringify(txt))
+}
+
+const convertFromBase64 = base64Txt => {
+	return atob(base64Txt)
+}
+
+module.exports = {
+	generateUUID,
+	generatePort,
+	generateEmail,
+	convertToBase64,
+	convertFromBase64,
+}
