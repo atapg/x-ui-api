@@ -17,8 +17,17 @@ route.get('/', async (req, res) => {})
 
 route.post('/inbound', async (req, res) => {
 	const { hostName, totalGB, expiryTime, remark } = req.body
-	console.log('Here')
-	res.send(await createMainVmessInbound(hostName, remark, totalGB, expiryTime))
+
+	const inbound = await createMainVmessInbound(
+		hostName,
+		remark,
+		totalGB,
+		expiryTime,
+	)
+
+	if (!inbound) return res.status(400).send('Failed to create inbound')
+
+	res.json(inbound)
 })
 
 route.delete('/{id}', async (req, res) => {})
