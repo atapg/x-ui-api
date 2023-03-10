@@ -142,6 +142,8 @@ const getInboundsList = async ({ hostName = null, plainHostName = null }) => {
 }
 
 const deleteVmessInbound = async url => {
+	if (!url) return false
+
 	const obj = JSON.parse(convertFromBase64(url))
 
 	const list = await getInboundsList({ plainHostName: obj.add })
@@ -197,4 +199,40 @@ const deleteVmessInbound = async url => {
 		})
 }
 
-module.exports = { createMainVmessInbound, getInboundsList, deleteVmessInbound }
+const getVmessInboundTraffic = async url => {
+	if (!url) return false
+
+	const obj = JSON.parse(convertFromBase64(url))
+
+	const list = await getInboundsList({ plainHostName: obj.add })
+
+	const inbound = list.filter(listItem => {
+		return listItem.port === obj.port
+	})
+
+	if (inbound.length <= 0) {
+		return false
+	}
+
+	// const host = await System.findOne({
+	// 	where: {
+	// 		host: obj.add,
+	// 	},
+	// })
+
+	// if (!host) return 'Host not found'
+
+	return {
+		down: inbound[0].down,
+		up: inbound[0].up,
+		total: inbound[0].total,
+		expiryTime: inbound[0].expiryTime,
+	}
+}
+
+module.exports = {
+	createMainVmessInbound,
+	getInboundsList,
+	deleteVmessInbound,
+	getVmessInboundTraffic,
+}

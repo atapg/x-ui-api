@@ -7,6 +7,7 @@ const { addClientIntoInbound } = require('./controllers/client')
 const {
 	createMainVmessInbound,
 	deleteVmessInbound,
+	getVmessInboundTraffic,
 } = require('./controllers/inbound')
 
 // ------------ { Inbound routes } ------------
@@ -39,6 +40,14 @@ route.delete('/inbound', async (req, res) => {
 	if (inbound) return res.json({ message: inbound })
 
 	return res.status(400).json({ message: false })
+})
+
+route.post('/inbound/traffic', async (req, res) => {
+	const traffic = await getVmessInboundTraffic(req.body.url)
+
+	if (!traffic) res.status(400).json({ message: false })
+
+	res.json(traffic)
 })
 
 // ------------ { Inbound routes } ------------
