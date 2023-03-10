@@ -143,7 +143,7 @@ const getInboundsList = async ({ hostName = null, plainHostName = null }) => {
 
 const deleteVmessInbound = async url => {
 	const obj = JSON.parse(convertFromBase64(url))
-	console.log(obj)
+
 	const list = await getInboundsList({ plainHostName: obj.add })
 
 	const inbound = list.filter(listItem => {
