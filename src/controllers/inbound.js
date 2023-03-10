@@ -5,6 +5,7 @@ const {
 	generatePort,
 	generateUUID,
 	convertToBase64,
+	convertFromBase64,
 } = require('../utils/helpers')
 const { System } = require('../models')
 const { Inbounds } = require('../models')
@@ -108,11 +109,14 @@ const createMainVmessInbound = async (
 		})
 }
 
-const getInboundsList = async hostName => {
+const getInboundsList = async ({ hostName = null, plainHostName = null }) => {
+	const searchQuery = {}
+
+	if (plainHostName) searchQuery.host = plainHostName
+	else if (hostName) searchQuery.hostName = hostName
+
 	const host = await System.findOne({
-		where: {
-			hostName: hostName,
-		},
+		where: searchQuery,
 	})
 
 	if (!host) return 'Err'
@@ -120,7 +124,7 @@ const getInboundsList = async hostName => {
 	return axios({
 		httpsAgent,
 		method: 'POST',
-		url: `${hostName}/xui/inbound/list`,
+		url: `${host.dataValues.hostName}/xui/inbound/list`,
 		headers: {
 			'content-type': 'application/x-www-form-urlencoded',
 			Cookie: `session=${host.dataValues.session}`,
@@ -137,4 +141,60 @@ const getInboundsList = async hostName => {
 		})
 }
 
-module.exports = { createMainVmessInbound, getInboundsList }
+const deleteVmessInbound = async url => {
+	const obj = JSON.parse(convertFromBase64(url))
+	console.log(obj)
+	const list = await getInboundsList({ plainHostName: obj.add })
+
+	const inbound = list.filter(listItem => {
+		return listItem.port === obj.port
+	})
+
+	if (inbound.length <= 0) {
+		return false
+	}
+
+	const id = inbound[0].id
+
+	const host = await System.findOne({
+		where: {
+			host: obj.add,
+		},
+	})
+
+	if (!host) return 'Host not found'
+
+	return axios({
+		httpsAgent,
+		method: 'POST',
+		url: `${host.dataValues.hostName}/xui/inbound/del/${id}`,
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+			Cookie: `session=${host.dataValues.session}`,
+		},
+	})
+		.then(async ({ data }) => {
+			console.log(
+				`Inbound ${id} deleted successfully, host: ${host.dataValues.hostName}`,
+			)
+
+			await Inbounds.destroy({
+				where: {
+					inboundId: id,
+				},
+			})
+
+			return data.success
+		})
+		.catch(err => {
+			console.log(err)
+
+			console.log(
+				`Failed to delete inbound ${id}, host: ${host.dataValues.hostName}`,
+			)
+
+			return false
+		})
+}
+
+module.exports = { createMainVmessInbound, getInboundsList, deleteVmessInbound }

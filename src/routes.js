@@ -4,7 +4,10 @@ const route = require('express').Router()
 const qs = require('qs')
 const { System } = require('./models')
 const { addClientIntoInbound } = require('./controllers/client')
-const { createMainVmessInbound } = require('./controllers/inbound')
+const {
+	createMainVmessInbound,
+	deleteVmessInbound,
+} = require('./controllers/inbound')
 
 // ------------ { Inbound routes } ------------
 
@@ -30,7 +33,13 @@ route.post('/inbound', async (req, res) => {
 	res.json(inbound)
 })
 
-route.delete('/{id}', async (req, res) => {})
+route.delete('/inbound', async (req, res) => {
+	const inbound = await deleteVmessInbound(req.body.url)
+
+	if (inbound) return res.json({ message: inbound })
+
+	return res.status(400).json({ message: false })
+})
 
 // ------------ { Inbound routes } ------------
 
