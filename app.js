@@ -5,7 +5,18 @@ const { updateOrCreateSessions } = require('./src/controllers/session')
 const cron = require('node-cron')
 
 // DataBase Connection
-require('./src/config/db')
+const sequelize = require('./src/config/db')
+
+sequelize
+	.authenticate()
+	.then(() => {
+		console.log('Database connected')
+		updateOrCreateSessions()
+	})
+	.catch(() => {
+		console.log('Database Connection Failed')
+	})
+
 require('./src/config/mongodb')
 
 // Express app
@@ -26,5 +37,6 @@ app.listen(PORT, async () => {
 // TODO create cron job each 30day to update hosts sessions
 cron.schedule('59 30 5 * * *', () => {
 	console.log(`Started To Update Sessions - ${new Date().toLocaleString()}`)
+
 	updateOrCreateSessions()
 })
