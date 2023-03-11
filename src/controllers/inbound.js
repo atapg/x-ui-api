@@ -124,7 +124,9 @@ const getInboundsList = async ({ hostName = null, plainHostName = null }) => {
 		where: searchQuery,
 	})
 
-	if (!host) return 'Err'
+	if (!host) {
+		return []
+	}
 
 	return axios({
 		httpsAgent,
@@ -141,8 +143,7 @@ const getInboundsList = async ({ hostName = null, plainHostName = null }) => {
 			return data.obj
 		})
 		.catch(err => {
-			console.error(err)
-			return null
+			return []
 		})
 }
 
@@ -213,6 +214,8 @@ const getVmessInboundTraffic = async url => {
 	const obj = JSON.parse(convertFromBase64(url))
 
 	const list = await getInboundsList({ plainHostName: obj.add })
+
+	if (list.length <= 0) return false
 
 	const inbound = list.filter(listItem => {
 		return listItem.port === obj.port
