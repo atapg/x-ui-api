@@ -222,6 +222,33 @@ const getVmessInboundTraffic = async url => {
 		return false
 	}
 
+	const clients = JSON.parse(inbound[0].settings).clients
+
+	const findClient = clients.filter(client => {
+		return client.id === obj.id
+	})
+
+	const email = findClient[0].email
+
+	const clientStats = inbound[0].clientStats.filter(stats => {
+		return stats.email === email
+	})
+
+	if (clientStats.length <= 0) {
+		return {
+			down: inbound[0].down,
+			up: inbound[0].up,
+			total: inbound[0].total,
+			expiryTime: inbound[0].expiryTime,
+		}
+	} else {
+		return {
+			down: clientStats[0].down,
+			up: clientStats[0].up,
+			total: clientStats[0].total,
+			expiryTime: clientStats[0].expiryTime,
+		}
+	}
 	// const host = await System.findOne({
 	// 	where: {
 	// 		host: obj.add,
@@ -229,13 +256,6 @@ const getVmessInboundTraffic = async url => {
 	// })
 
 	// if (!host) return 'Host not found'
-
-	return {
-		down: inbound[0].down,
-		up: inbound[0].up,
-		total: inbound[0].total,
-		expiryTime: inbound[0].expiryTime,
-	}
 }
 
 module.exports = {

@@ -12,5 +12,5 @@ module.exports = async (req, res, next) => {
 	// if (user.role !== 'admin')
 	// 	return res.status(401).json({ message: 'Unauthorized' })
 
-	return res.status(401).json({ message: 'Unauthorized' })
+	return next()
 }

@@ -12,7 +12,7 @@ const {
 } = require('./controllers/inbound')
 const { findHost } = require('./utils/helpers')
 
-route.use(require('./middleware/isAdmin'))
+// route.use(require('./middleware/isAdmin'))
 
 // ------------ { Inbound routes } ------------
 
