@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 require('./src/config/db')
 require('./src/config/mongodb')
 const { addVmessIntoMongoDb } = require('./src/controllers/mongo')
+const { updateOrCreateSessions } = require('./src/controllers/session')
 
 // Express app
 const app = express()
@@ -21,6 +22,7 @@ const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
 	console.log(`Server running on port: ${PORT}`)
 	// addVmessIntoMongoDb('URL', 20)
+	// updateOrCreateSessions()
 })
 
 // TODO create cron job each 30day to update hosts sessions

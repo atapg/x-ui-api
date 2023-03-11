@@ -5,7 +5,7 @@ const generateUUID = () => {
 }
 
 const generatePort = () => {
-	return Math.floor(Math.random() * 90000) + 10000
+	return Math.floor(Math.random() * 65000) + 1000
 }
 
 const generateEmail = length => {

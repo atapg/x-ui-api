@@ -40,6 +40,27 @@ const KeyValue = sequelize.define(
 	},
 )
 
+const Users = sequelize.define(
+	'Users',
+	{
+		username: {
+			type: DataTypes.STRING,
+			required: true,
+		},
+		password: {
+			type: DataTypes.STRING,
+			required: true,
+		},
+		type: {
+			type: DataTypes.ENUM(['user', 'admin']),
+			defaultValue: 'user',
+		},
+	},
+	{
+		timestamps: true,
+	},
+)
+
 const Inbounds = sequelize.define(
 	'Inbounds',
 	{
