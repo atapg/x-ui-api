@@ -131,7 +131,7 @@ const getInboundsList = async ({ hostName = null, plainHostName = null }) => {
 		},
 	})
 		.then(({ data }) => {
-			console.log(`Get list of inbounds successfully, host: ${hostName}`)
+			console.log(`Get list of inbounds successfully`)
 
 			return data.obj
 		})

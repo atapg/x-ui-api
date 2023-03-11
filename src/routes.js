@@ -8,11 +8,14 @@ const {
 	createMainVmessInbound,
 	deleteVmessInbound,
 	getVmessInboundTraffic,
+	getInboundsList,
 } = require('./controllers/inbound')
 
 // ------------ { Inbound routes } ------------
 
-route.get('/', async (req, res) => {})
+route.get('/inbound', async (req, res) => {
+	res.send(await getInboundsList(req.params))
+})
 
 // Create client
 // route.post('/client', async (req, res) => {
