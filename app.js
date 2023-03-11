@@ -26,7 +26,7 @@ app.listen(PORT, () => {
 })
 
 // TODO create cron job each 30day to update hosts sessions
-cron.schedule('59 20 17 * * *', () => {
+cron.schedule('59 30 5 * * *', () => {
 	console.log(`Started To Update Sessions - ${new Date().toLocaleString()}`)
-	// updateOrCreateSessions()
+	updateOrCreateSessions()
 })

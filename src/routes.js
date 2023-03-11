@@ -72,7 +72,18 @@ route.post('/inbound/traffic', async (req, res) => {
 
 // ------------ { System routes } ------------
 
-route.post('/system', async (req, res) => {})
+route.post('/system', async (req, res) => {
+	const { host, hostName, username, password, description } = req.body
+
+	try {
+		await System.create({ host, hostName, username, password, description })
+
+		res.json({ message: true })
+	} catch (e) {
+		console.log('ERROR')
+		res.status(400).json({ message: false })
+	}
+})
 
 // ------------ { System routes } ------------
 
