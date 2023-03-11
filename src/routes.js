@@ -3,6 +3,7 @@ const { httpsAgent } = require('./config/config')
 const route = require('express').Router()
 const qs = require('qs')
 const { System } = require('./models/models')
+const User = require('./models/user')
 const { addClientIntoInbound } = require('./controllers/client')
 const {
 	createMainVmessInbound,
@@ -12,21 +13,41 @@ const {
 	getVlessInboundTraffic,
 } = require('./controllers/inbound')
 const { findHost } = require('./utils/helpers')
-
-// route.use(require('./middleware/isAdmin'))
+const { generateToken } = require('./utils/token')
+const adminMiddleware = require('./middleware/isAdmin')
 
 // ------------ { Inbound routes } ------------
-
-route.get('/inbound', async (req, res) => {
-	res.send(await getInboundsList(req.params))
-})
+//
+// route.get('/inbound', async (req, res) => {
+// 	res.send(await getInboundsList(req.params))
+// })
 
 // Create client
 // route.post('/client', async (req, res) => {
 // 	res.send(await addClientIntoInbound('https://xx.shapark-tab.com:6767'))
 // })
 
-route.post('/inbound', async (req, res) => {
+route.post('/authenticate', async (req, res) => {
+	const { telegram_id, id } = req.body
+
+	const userByTelId = await User.findOne({ telegram_id })
+
+	if (!userByTelId) return res.status(401).json({ message: 'Unauthorized' })
+
+	const userById = await User.findById(id)
+
+	if (!userById) return res.status(401).json({ message: 'Unauthorized' })
+
+	if (userByTelId._id.toString() !== userById._id.toString())
+		return res.status(401).json({ message: 'Unauthorized' })
+
+	if (userById.role !== 'admin')
+		return res.status(401).json({ message: 'Unauthorized' })
+
+	return res.json({ token: generateToken(id) })
+})
+
+route.post('/inbound', adminMiddleware, async (req, res) => {
 	const { totalGB, expiryTime, remark } = req.body
 	let host = req.body.hostName
 
@@ -49,7 +70,7 @@ route.post('/inbound', async (req, res) => {
 	res.json(inbound)
 })
 
-route.delete('/inbound', async (req, res) => {
+route.delete('/inbound', adminMiddleware, async (req, res) => {
 	if (!req.body.url) return res.status(400).send('Insufficient Credentials')
 
 	const inbound = await deleteVmessInbound(req.body.url, req.body.inboundId)
@@ -85,21 +106,21 @@ route.post('/inbound/traffic', async (req, res) => {
 
 // ------------ { System routes } ------------
 
-route.post('/system', async (req, res) => {
-	const { host, hostName, username, password, description } = req.body
-
-	if (!host || !hostName || !username || !password)
-		return res.status(400).json({ message: 'Insufficient Credentials' })
-
-	try {
-		await System.create({ host, hostName, username, password, description })
-
-		res.json({ message: true })
-	} catch (e) {
-		console.log('ERROR')
-		res.status(400).json({ message: false })
-	}
-})
+// route.post('/system', async (req, res) => {
+// 	const { host, hostName, username, password, description } = req.body
+//
+// 	if (!host || !hostName || !username || !password)
+// 		return res.status(400).json({ message: 'Insufficient Credentials' })
+//
+// 	try {
+// 		await System.create({ host, hostName, username, password, description })
+//
+// 		res.json({ message: true })
+// 	} catch (e) {
+// 		console.log('ERROR')
+// 		res.status(400).json({ message: false })
+// 	}
+// })
 
 // ------------ { System routes } ------------
 
