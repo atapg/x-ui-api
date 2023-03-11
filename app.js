@@ -19,14 +19,14 @@ app.use('/', require('./src/routes'))
 
 // App running
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
 	console.log(`Server running on port: ${PORT}`)
 
-	updateOrCreateSessions()
+	await updateOrCreateSessions()
 })
 
 // TODO create cron job each 30day to update hosts sessions
-cron.schedule('59 30 5 * * *', () => {
+cron.schedule('59 30 5 * * *', async () => {
 	console.log(`Started To Update Sessions - ${new Date().toLocaleString()}`)
-	updateOrCreateSessions()
+	await updateOrCreateSessions()
 })
