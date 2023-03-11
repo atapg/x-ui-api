@@ -75,6 +75,9 @@ route.post('/inbound/traffic', async (req, res) => {
 route.post('/system', async (req, res) => {
 	const { host, hostName, username, password, description } = req.body
 
+	if (!host || !hostName || !username || !password)
+		return res.status(400).json({ message: 'Insufficient Credentials' })
+
 	try {
 		await System.create({ host, hostName, username, password, description })
 
