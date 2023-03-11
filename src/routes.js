@@ -10,6 +10,9 @@ const {
 	getVmessInboundTraffic,
 	getInboundsList,
 } = require('./controllers/inbound')
+const { findHost } = require('./utils/helpers')
+
+route.use(require('./middleware/isAdmin'))
 
 // ------------ { Inbound routes } ------------
 
@@ -23,13 +26,18 @@ route.get('/inbound', async (req, res) => {
 // })
 
 route.post('/inbound', async (req, res) => {
-	const { hostName, totalGB, expiryTime, remark } = req.body
+	const { totalGB, expiryTime, remark } = req.body
+	let host = req.body.hostName
 
-	if (!hostName || !totalGB || !remark)
+	if (!totalGB || !remark)
 		return res.status(400).send('Insufficient Credentials')
 
+	if (!host) {
+		host = findHost(totalGB.toString())
+	}
+
 	const inbound = await createMainVmessInbound(
-		hostName,
+		host,
 		remark,
 		totalGB,
 		expiryTime,

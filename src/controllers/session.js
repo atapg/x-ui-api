@@ -17,7 +17,7 @@ const updateOrCreateSessions = async () => {
 	console.info('Updating sessions started')
 	for (let i = 0; i < hosts.length; i++) {
 		const host = hosts[i].dataValues
-		console.log(host)
+
 		axios({
 			httpsAgent,
 			method: 'POST',

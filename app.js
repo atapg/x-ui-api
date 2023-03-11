@@ -1,12 +1,12 @@
 require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
+const { updateOrCreateSessions } = require('./src/controllers/session')
+const cron = require('node-cron')
 
 // DataBase Connection
 require('./src/config/db')
 require('./src/config/mongodb')
-const { addVmessIntoMongoDb } = require('./src/controllers/mongo')
-const { updateOrCreateSessions } = require('./src/controllers/session')
 
 // Express app
 const app = express()
@@ -21,8 +21,12 @@ app.use('/', require('./src/routes'))
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
 	console.log(`Server running on port: ${PORT}`)
-	// addVmessIntoMongoDb('URL', 20)
-	// updateOrCreateSessions()
+
+	updateOrCreateSessions()
 })
 
 // TODO create cron job each 30day to update hosts sessions
+cron.schedule('59 20 17 * * *', () => {
+	console.log(`Started To Update Sessions - ${new Date().toLocaleString()}`)
+	// updateOrCreateSessions()
+})

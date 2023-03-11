@@ -23,6 +23,7 @@ const System = sequelize.define(
 		inboundsCount: {
 			type: DataTypes.BIGINT,
 		},
+		description: DataTypes.TEXT,
 	},
 	{
 		timestamps: true,

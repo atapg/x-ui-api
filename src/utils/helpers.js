@@ -30,10 +30,31 @@ const convertFromBase64 = base64Txt => {
 	return atob(base64Txt)
 }
 
+// TODO Don't forget to change
+const findHost = traffic => {
+	switch (traffic) {
+		case '200':
+			return 'https://frr.shapark-tab.com:6767'
+		case '100':
+			return 'https://sv6.turboo-server.com:3469'
+		case '50':
+			return 'https://sv6.turboo-server.com:3469'
+		case '30':
+			return 'https://frr.shapark-tab.com:6767'
+		case '20':
+			return 'https://sv9.turboo-server.com:6767'
+		case '1':
+			return 'https://sv9.turboo-server.com:6767'
+		default:
+			return 'https://sv9.turboo-server.com:6767'
+	}
+}
+
 module.exports = {
 	generateUUID,
 	generatePort,
 	generateEmail,
 	convertToBase64,
 	convertFromBase64,
+	findHost,
 }
