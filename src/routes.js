@@ -9,6 +9,7 @@ const {
 	deleteVmessInbound,
 	getVmessInboundTraffic,
 	getInboundsList,
+	getVlessInboundTraffic,
 } = require('./controllers/inbound')
 const { findHost } = require('./utils/helpers')
 
@@ -62,11 +63,19 @@ route.post('/inbound/traffic', async (req, res) => {
 	if (!req.body.url) return res.status(400).send('Insufficient Credentials')
 
 	try {
-		const traffic = await getVmessInboundTraffic(req.body.url)
+		if (req.body.protocol === 'vmess') {
+			const traffic = await getVmessInboundTraffic(req.body.url)
 
-		if (!traffic) return res.status(400).json({ message: false })
+			if (!traffic) return res.status(400).json({ message: false })
 
-		return res.json(traffic)
+			return res.json(traffic)
+		} else if (req.body.protocol === 'vless') {
+			const traffic = await getVlessInboundTraffic(req.body.url)
+
+			if (!traffic) return res.status(400).json({ message: false })
+
+			return res.json(traffic)
+		}
 	} catch (e) {
 		return res.status(400).send('Insufficient Credentials')
 	}

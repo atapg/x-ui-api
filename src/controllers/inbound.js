@@ -261,9 +261,64 @@ const getVmessInboundTraffic = async url => {
 	// if (!host) return 'Host not found'
 }
 
+const getVlessInboundTraffic = async url => {
+	if (!url) return false
+
+	function validUUID(id) {
+		const regex =
+			/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+		return regex.test(id)
+	}
+
+	const id = url.split('@')[0]
+
+	const addressWithPort = url.split('@')[1].split('?')
+	const addUrl = addressWithPort[0]
+
+	const host = addUrl.split(':')[0]
+	let port = addUrl.split(':')[1]
+
+	if (port.endsWith('/')) {
+		port = port.slice(0, -1)
+	}
+
+	try {
+		const list = await getInboundsList({ plainHostName: host })
+
+		if (list.length <= 0) return false
+
+		const inbound = list.filter(listItem => {
+			return listItem.port == port
+		})
+
+		if (inbound.length <= 0) {
+			return false
+		}
+
+		const clients = JSON.parse(inbound[0].settings).clients
+
+		const client = clients.filter(client => client.id === id)
+
+		const email = client[0].email
+
+		const rest = inbound[0].clientStats.filter(stats => stats.email === email)
+
+		return {
+			down: rest[0].down,
+			up: rest[0].up,
+			total: rest[0].total,
+			expiryTime: rest[0].expiryTime,
+		}
+	} catch (e) {
+		return false
+	}
+}
+
 module.exports = {
 	createMainVmessInbound,
 	getInboundsList,
 	deleteVmessInbound,
 	getVmessInboundTraffic,
+	getVlessInboundTraffic,
 }
