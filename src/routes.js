@@ -61,11 +61,15 @@ route.delete('/inbound', async (req, res) => {
 route.post('/inbound/traffic', async (req, res) => {
 	if (!req.body.url) return res.status(400).send('Insufficient Credentials')
 
-	const traffic = await getVmessInboundTraffic(req.body.url)
+	try {
+		const traffic = await getVmessInboundTraffic(req.body.url)
 
-	if (!traffic) return res.status(400).json({ message: false })
+		if (!traffic) return res.status(400).json({ message: false })
 
-	res.json(traffic)
+		return res.json(traffic)
+	} catch (e) {
+		return res.status(400).send('Insufficient Credentials')
+	}
 })
 
 // ------------ { Inbound routes } ------------
