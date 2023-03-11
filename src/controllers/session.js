@@ -1,7 +1,7 @@
 const axios = require('axios')
-const { httpsAgent } = require('../config')
+const { httpsAgent } = require('../config/config')
 const qs = require('qs')
-const { System } = require('../models')
+const { System } = require('../models/models')
 
 // Every session expires in 30days so create cron job and update each session
 const updateOrCreateSessions = async () => {

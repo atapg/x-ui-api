@@ -1,8 +1,8 @@
 const axios = require('axios')
-const { httpsAgent } = require('./config')
+const { httpsAgent } = require('./config/config')
 const route = require('express').Router()
 const qs = require('qs')
-const { System } = require('./models')
+const { System } = require('./models/models')
 const { addClientIntoInbound } = require('./controllers/client')
 const {
 	createMainVmessInbound,
@@ -25,7 +25,7 @@ route.get('/inbound', async (req, res) => {
 route.post('/inbound', async (req, res) => {
 	const { hostName, totalGB, expiryTime, remark } = req.body
 
-	if (!hostName || !totalGB || !expiryTime || !remark)
+	if (!hostName || !totalGB || !remark)
 		return res.status(400).send('Insufficient Credentials')
 
 	const inbound = await createMainVmessInbound(
@@ -43,7 +43,7 @@ route.post('/inbound', async (req, res) => {
 route.delete('/inbound', async (req, res) => {
 	if (!req.body.url) return res.status(400).send('Insufficient Credentials')
 
-	const inbound = await deleteVmessInbound(req.body.url)
+	const inbound = await deleteVmessInbound(req.body.url, req.body.inboundId)
 
 	if (inbound) return res.json({ message: inbound })
 

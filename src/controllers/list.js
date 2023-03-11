@@ -1,6 +1,6 @@
 const axios = require('axios')
-const { System } = require('../models')
-const { httpsAgent } = require('../config')
+const { System } = require('../models/models')
+const { httpsAgent } = require('../config/config')
 
 const getListOfInbounds = async hostName => {
 	const host = await System.findOne({ where: { hostName } })

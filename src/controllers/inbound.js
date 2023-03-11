@@ -1,5 +1,5 @@
 const axios = require('axios')
-const { httpsAgent } = require('../config')
+const { httpsAgent } = require('../config/config')
 const qs = require('qs')
 const {
 	generatePort,
@@ -7,9 +7,10 @@ const {
 	convertToBase64,
 	convertFromBase64,
 } = require('../utils/helpers')
-const { System } = require('../models')
-const { Inbounds } = require('../models')
+const { System } = require('../models/models')
+const { Inbounds } = require('../models/models')
 const { streamSettings, sniffing } = require('../utils/constants')
+const { addVmessIntoMongoDb } = require('./mongo')
 
 const createMainVmessInbound = async (
 	hostName,
@@ -77,6 +78,20 @@ const createMainVmessInbound = async (
 		.then(async ({ data }) => {
 			console.info(`Inbound successfully added into: ${hostName}`)
 
+			const url = convertToBase64({
+				v: '2',
+				ps: data.obj.remark,
+				add: host.dataValues.host,
+				port: data.obj.port,
+				id: id,
+				aid: 0,
+				net: 'tcp',
+				type: 'http',
+				host: 'bmi.ir',
+				path: '/',
+				tls: 'none',
+			})
+
 			await Inbounds.create({
 				inboundId: data.obj.id,
 				total: data.obj.total,
@@ -85,20 +100,10 @@ const createMainVmessInbound = async (
 				protocol: data.obj.protocol,
 				SystemId: host.dataValues.id,
 				expiryTime: data.obj.expiryTime,
-				url: convertToBase64({
-					v: '2',
-					ps: data.obj.remark,
-					add: host.dataValues.host,
-					port: data.obj.port,
-					id: id,
-					aid: 0,
-					net: 'tcp',
-					type: 'http',
-					host: 'bmi.ir',
-					path: '/',
-					tls: 'none',
-				}),
+				url: url,
 			})
+
+			await addVmessIntoMongoDb(url, totalGB)
 
 			return data.obj
 		})
@@ -141,22 +146,25 @@ const getInboundsList = async ({ hostName = null, plainHostName = null }) => {
 		})
 }
 
-const deleteVmessInbound = async url => {
-	if (!url) return false
-
+const deleteVmessInbound = async (url = null, inboundId = null) => {
 	const obj = JSON.parse(convertFromBase64(url))
 
-	const list = await getInboundsList({ plainHostName: obj.add })
+	let id = null
+	if (!inboundId) {
+		const list = await getInboundsList({ plainHostName: obj.add })
 
-	const inbound = list.filter(listItem => {
-		return listItem.port === obj.port
-	})
+		const inbound = list.filter(listItem => {
+			return listItem.port === obj.port
+		})
 
-	if (inbound.length <= 0) {
-		return false
+		if (inbound.length <= 0) {
+			return false
+		}
+
+		id = inbound[0].id
+	} else {
+		id = inboundId
 	}
-
-	const id = inbound[0].id
 
 	const host = await System.findOne({
 		where: {

@@ -5,9 +5,9 @@ const {
 } = require('../utils/helpers')
 const { streamSettings, sniffing } = require('../utils/constants')
 const axios = require('axios')
-const { httpsAgent } = require('../config')
+const { httpsAgent } = require('../config/config')
 const qs = require('qs')
-const { Inbounds, System, Clients } = require('../models')
+const { Inbounds, System, Clients } = require('../models/models')
 const { getInboundsList } = require('./inbound')
 
 const addClientIntoInbound = async (
