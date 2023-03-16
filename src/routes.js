@@ -86,7 +86,7 @@ route.post('/inbound/traffic', async (req, res) => {
 	try {
 		if (req.body.protocol === 'vmess') {
 			const traffic = await getVmessInboundTraffic(req.body.url)
-
+			console.log(traffic)
 			if (!traffic) return res.status(400).json({ message: false })
 
 			return res.json(traffic)

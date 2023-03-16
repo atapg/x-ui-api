@@ -54,7 +54,9 @@ const updateOrCreateSessions = async () => {
 				console.info(`${host.hostName}'s session updated successfully`)
 			})
 			.catch(err => {
-				console.error(err)
+				console.error(
+					`Failed to update Host's session, HOST_NAME: ${host.hostName}`,
+				)
 			})
 	}
 }

@@ -5,7 +5,7 @@ const generateUUID = () => {
 }
 
 const generatePort = () => {
-	return Math.floor(Math.random() * 65000) + 1000
+	return Math.floor(Math.random() * 60000) + 1000
 }
 
 const generateEmail = length => {
@@ -43,12 +43,35 @@ const findHost = traffic => {
 			return 'https://frr.shapark-tab.com:6767'
 		case '20':
 			return 'https://sv9.turboo-server.com:6767'
+		case '10':
+			return 'https://ir2.shapark-tab.com:9595'
 		case '1':
 			return 'https://sv9.turboo-server.com:6767'
 		default:
 			return 'https://sv9.turboo-server.com:6767'
 	}
 }
+
+const convertSubDomains = (domain = () => {
+	switch (domain) {
+		case '200':
+			return 'https://frr.shapark-tab.com:6767'
+		case '100':
+			return 'https://sv6.turboo-server.com:3469'
+		case '50':
+			return 'https://sv6.turboo-server.com:3469'
+		case '30':
+			return 'https://frr.shapark-tab.com:6767'
+		case '20':
+			return 'https://sv9.turboo-server.com:6767'
+		case '10':
+			return 'https://ir2.shapark-tab.com:9595'
+		case '1':
+			return 'https://sv9.turboo-server.com:6767'
+		default:
+			return 'https://sv9.turboo-server.com:6767'
+	}
+})
 
 module.exports = {
 	generateUUID,

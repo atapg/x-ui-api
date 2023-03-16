@@ -92,16 +92,16 @@ const createMainVmessInbound = async (
 				tls: 'none',
 			})
 
-			await Inbounds.create({
-				inboundId: data.obj.id,
-				total: data.obj.total,
-				remark: data.obj.remark,
-				port: data.obj.port,
-				protocol: data.obj.protocol,
-				SystemId: host.dataValues.id,
-				expiryTime: data.obj.expiryTime,
-				url: url,
-			})
+			// await Inbounds.create({
+			// 	inboundId: data.obj.id,
+			// 	total: data.obj.total,
+			// 	remark: data.obj.remark,
+			// 	port: data.obj.port,
+			// 	protocol: data.obj.protocol,
+			// 	SystemId: host.dataValues.id,
+			// 	expiryTime: data.obj.expiryTime,
+			// 	url: url,
+			// })
 
 			await addVmessIntoMongoDb(url, totalGB)
 
@@ -218,7 +218,7 @@ const getVmessInboundTraffic = async url => {
 	if (list.length <= 0) return false
 
 	const inbound = list.filter(listItem => {
-		return listItem.port === obj.port
+		return listItem.port === parseInt(obj.port)
 	})
 
 	if (inbound.length <= 0) {
@@ -237,7 +237,14 @@ const getVmessInboundTraffic = async url => {
 		return stats.email === email
 	})
 
-	if (clientStats.length <= 0) {
+	if (clients.length === 1) {
+		return {
+			down: inbound[0].down,
+			up: inbound[0].up,
+			total: inbound[0].total,
+			expiryTime: inbound[0].expiryTime,
+		}
+	} else if (clientStats.length <= 0) {
 		return {
 			down: inbound[0].down,
 			up: inbound[0].up,
@@ -289,7 +296,7 @@ const getVlessInboundTraffic = async url => {
 		if (list.length <= 0) return false
 
 		const inbound = list.filter(listItem => {
-			return listItem.port == port
+			return listItem.port === parseInt(port)
 		})
 
 		if (inbound.length <= 0) {
@@ -304,6 +311,15 @@ const getVlessInboundTraffic = async url => {
 
 		const rest = inbound[0].clientStats.filter(stats => stats.email === email)
 
+		if (rest.length <= 0) {
+			return {
+				down: inbound[0].down,
+				up: inbound[0].up,
+				total: inbound[0].total,
+				expiryTime: inbound[0].expiryTime,
+			}
+		}
+
 		return {
 			down: rest[0].down,
 			up: rest[0].up,
@@ -311,6 +327,7 @@ const getVlessInboundTraffic = async url => {
 			expiryTime: rest[0].expiryTime,
 		}
 	} catch (e) {
+		console.log({ e })
 		return false
 	}
 }
