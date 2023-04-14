@@ -21,6 +21,15 @@ const planSchema = mongoose.Schema(
 		order: {
 			type: Number,
 		},
+		type: {
+			type: String,
+			enum: ['balance', 'payment'],
+			default: 'payment',
+		},
+		duration: {
+			type: Number,
+			default: 0,
+		},
 	},
 	{
 		timestamps: true,
