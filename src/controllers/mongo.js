@@ -1,7 +1,13 @@
 const Server = require('../models/server')
 const Plan = require('../models/plan')
 
-const addVmessIntoMongoDb = async (url, traffic, description) => {
+const addVmessIntoMongoDb = async (
+	url,
+	traffic,
+	description,
+	owner = null,
+	planId = null,
+) => {
 	try {
 		let type
 		let plan
@@ -23,6 +29,8 @@ const addVmessIntoMongoDb = async (url, traffic, description) => {
 		}
 
 		if (description) data.description = description
+		if (owner) data.owner = owner
+		if (planId) data.plan = planId
 
 		data.type = type
 		data.size = 'GB'

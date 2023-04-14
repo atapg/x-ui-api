@@ -15,6 +15,7 @@ const {
 const { findHost } = require('./utils/helpers')
 const { generateToken } = require('./utils/token')
 const adminMiddleware = require('./middleware/isAdmin')
+const { convertToBase64 } = require('./utils/helpers')
 
 // ------------ { Inbound routes } ------------
 //
@@ -49,10 +50,11 @@ route.post('/authenticate', async (req, res) => {
 
 route.post('/inbound', adminMiddleware, async (req, res) => {
 	const { totalGB, expiryTime, remark } = req.body
+	const { owner, plan } = req.query
+
 	let host = req.body.hostName
 
-	if (!totalGB || !remark)
-		return res.status(400).send('Insufficient Credentials')
+	if (!remark) return res.status(400).send('Insufficient Credentials')
 
 	if (!host) {
 		host = findHost(totalGB.toString())
@@ -63,6 +65,8 @@ route.post('/inbound', adminMiddleware, async (req, res) => {
 		remark,
 		totalGB,
 		expiryTime,
+		owner,
+		plan,
 	)
 
 	if (!inbound) return res.status(400).send('Failed to create inbound')

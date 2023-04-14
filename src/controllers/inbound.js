@@ -17,8 +17,11 @@ const createMainVmessInbound = async (
 	remark,
 	totalGB,
 	expiryTimeInTimestamps,
+	owner = null,
+	plan = null,
 ) => {
 	const totalInBytes = totalGB * 1024 * 1024 * 1024
+	let url = null
 
 	const host = await System.findOne({
 		where: {
@@ -78,7 +81,7 @@ const createMainVmessInbound = async (
 		.then(async ({ data }) => {
 			console.info(`Inbound successfully added into: ${hostName}`)
 
-			const url = convertToBase64({
+			url = convertToBase64({
 				v: '2',
 				ps: data.obj.remark,
 				add: host.dataValues.host,
@@ -103,9 +106,9 @@ const createMainVmessInbound = async (
 			// 	url: url,
 			// })
 
-			await addVmessIntoMongoDb(url, totalGB)
+			await addVmessIntoMongoDb(url, totalGB, undefined, owner, plan)
 
-			return data.obj
+			return { ...data.obj, url }
 		})
 		.catch(err => {
 			console.error(err)
