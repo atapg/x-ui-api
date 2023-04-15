@@ -113,7 +113,7 @@ const createMainVmessInbound = async (
 		.catch(err => {
 			console.error(err)
 			console.error(`Couldn't add inbound into: ${hostName}`)
-			return err
+			return null
 		})
 }
 

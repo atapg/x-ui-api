@@ -32,6 +32,7 @@ const convertFromBase64 = base64Txt => {
 
 // TODO Don't forget to change
 const findHost = traffic => {
+	return 'https://sv6.turboo-server.com:3469'
 	switch (traffic) {
 		case '200':
 			return 'https://frr.shapark-tab.com:6767'
