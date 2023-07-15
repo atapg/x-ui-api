@@ -81,19 +81,21 @@ const createMainVmessInbound = async (
 		.then(async ({ data }) => {
 			console.info(`Inbound successfully added into: ${hostName}`)
 
-			url = convertToBase64({
-				v: '2',
-				ps: data.obj.remark,
-				add: host.dataValues.host,
-				port: data.obj.port,
-				id: id,
-				aid: 0,
-				net: 'tcp',
-				type: 'http',
-				host: 'bmi.ir',
-				path: '/',
-				tls: 'none',
-			})
+			url =
+				'vmess://' +
+				convertToBase64({
+					v: '2',
+					ps: data.obj.remark,
+					add: host.dataValues.host,
+					port: data.obj.port,
+					id: id,
+					aid: 0,
+					net: 'tcp',
+					type: 'http',
+					host: 'fast.com',
+					path: '/',
+					tls: 'none',
+				})
 
 			// await Inbounds.create({
 			// 	inboundId: data.obj.id,

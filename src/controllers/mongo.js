@@ -1,5 +1,6 @@
 const Server = require('../models/server')
 const Plan = require('../models/plan')
+const User = require('../models/user')
 
 const addVmessIntoMongoDb = async (
 	url,
@@ -38,6 +39,12 @@ const addVmessIntoMongoDb = async (
 		const sv = await Server.create(data)
 
 		if (!sv) return null
+
+		if (type === 'test') {
+			await User.findByIdAndUpdate(owner, {
+				testServer: sv._id,
+			})
+		}
 
 		return sv
 	} catch (e) {

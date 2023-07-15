@@ -75,7 +75,8 @@ route.post('/inbound', adminMiddleware, async (req, res) => {
 })
 
 route.delete('/inbound', adminMiddleware, async (req, res) => {
-	if (!req.body.url) return res.status(400).send('Insufficient Credentials')
+	if (!req.body.url && !req.body.inboundId)
+		return res.status(400).send('Insufficient Credentials')
 
 	const inbound = await deleteVmessInbound(req.body.url, req.body.inboundId)
 
@@ -103,6 +104,18 @@ route.post('/inbound/traffic', async (req, res) => {
 		}
 	} catch (e) {
 		return res.status(400).send('Insufficient Credentials')
+	}
+})
+
+route.get('/list', adminMiddleware, async (req, res) => {
+	try {
+		const { hostName } = req.query
+
+		const list = await getInboundsList({ hostName })
+
+		res.json(list)
+	} catch (e) {
+		return res.status(400).send('Bad Request')
 	}
 })
 

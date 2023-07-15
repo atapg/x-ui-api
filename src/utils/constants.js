@@ -9,7 +9,7 @@ const streamSettings = {
 				method: 'GET',
 				path: ['/'],
 				headers: {
-					Host: ['bmi.ir'],
+					Host: ['fast.com'],
 				},
 			},
 			response: {
