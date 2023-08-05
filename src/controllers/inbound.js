@@ -92,7 +92,7 @@ const createMainVmessInbound = async (
 					aid: 0,
 					net: 'tcp',
 					type: 'http',
-					host: 'fast.com',
+					host: 'divarcdn.com',
 					path: '/',
 					tls: 'none',
 				})
