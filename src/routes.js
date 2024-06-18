@@ -17,17 +17,6 @@ const { generateToken } = require('./utils/token')
 const adminMiddleware = require('./middleware/isAdmin')
 const { convertToBase64 } = require('./utils/helpers')
 
-// ------------ { Inbound routes } ------------
-//
-// route.get('/inbound', async (req, res) => {
-// 	res.send(await getInboundsList(req.params))
-// })
-
-// Create client
-// route.post('/client', async (req, res) => {
-// 	res.send(await addClientIntoInbound('https://xx.shapark-tab.com:6767'))
-// })
-
 route.post('/authenticate', async (req, res) => {
 	const { telegram_id, id } = req.body
 
@@ -49,9 +38,7 @@ route.post('/authenticate', async (req, res) => {
 })
 
 route.post('/inbound', adminMiddleware, async (req, res) => {
-	const { totalGB, expiryTime, remark } = req.body
-	const { owner, plan } = req.query
-
+	const { totalGB, expiryTime, remark, owner, plan } = req.body
 	let host = req.body.hostName
 
 	if (!remark) return res.status(400).send('Insufficient Credentials')
